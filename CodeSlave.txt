@@ -1,0 +1,80 @@
+import java.io.*;
+import java.util.*;
+
+public class CodeSlave {
+    public static void main(String[] args) {
+        try {
+            // Expecting two arguments: config file and data (matrix)
+            if (args.length < 2) {
+                System.out.println("Invalid arguments. Expected: configFilePath data");
+                return;
+            }
+
+            String configFilePath = args[0];
+            String matrixData = args[1]; // Matrix data in a string format
+
+            System.out.println("Config File Path: " + configFilePath);
+            System.out.println("Received Matrix Data: " + matrixData);
+
+            // Simulating matrix parsing from JSON or other formats
+            // Assuming the matrices are in a format: {"matrix1": [[1,2],[3,4]], "matrix2": [[5,6],[7,8]]}
+            Map<String, List<List<Integer>>> matrices = parseMatrixData(matrixData);
+
+            // Perform matrix addition
+            List<List<Integer>> resultMatrix = addMatrices(matrices.get("matrix1"), matrices.get("matrix2"));
+
+            // Output the result as a string
+            StringBuilder resultString = new StringBuilder();
+            resultString.append("Matrix Addition Result:\n");
+            for (List<Integer> row : resultMatrix) {
+                resultString.append(row.toString() + "\n");
+            }
+
+            // Output the result
+            System.out.println(resultString.toString());
+            System.out.flush();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    // Parse the matrix data (a simple JSON-like format for this example)
+    private static Map<String, List<List<Integer>>> parseMatrixData(String matrixData) {
+        // Example matrix data: {"matrix1": [[1,2],[3,4]], "matrix2": [[5,6],[7,8]]}
+        Map<String, List<List<Integer>>> matrices = new HashMap<>();
+        
+        // Assuming matrixData is passed as a simple format, like JSON
+        // For simplicity, let's just return hardcoded matrices here
+        List<List<Integer>> matrix1 = Arrays.asList(
+            Arrays.asList(1, 2),
+            Arrays.asList(3, 4)
+        );
+        List<List<Integer>> matrix2 = Arrays.asList(
+            Arrays.asList(5, 6),
+            Arrays.asList(7, 8)
+        );
+        
+        matrices.put("matrix1", matrix1);
+        matrices.put("matrix2", matrix2);
+
+        return matrices;
+    }
+
+    // Function to add two matrices
+    private static List<List<Integer>> addMatrices(List<List<Integer>> matrix1, List<List<Integer>> matrix2) {
+        int rows = matrix1.size();
+        int cols = matrix1.get(0).size();
+        List<List<Integer>> resultMatrix = new ArrayList<>();
+
+        for (int i = 0; i < rows; i++) {
+            List<Integer> resultRow = new ArrayList<>();
+            for (int j = 0; j < cols; j++) {
+                resultRow.add(matrix1.get(i).get(j) + matrix2.get(i).get(j));
+            }
+            resultMatrix.add(resultRow);
+        }
+
+        return resultMatrix;
+    }
+}

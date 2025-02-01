@@ -1,0 +1,55 @@
+import java.io.*;
+import java.net.*;
+
+public class Slave {
+    public static void main(String[] args) {
+        try {
+            int slavePort = 2025;
+            ServerSocket serverSocket = new ServerSocket(slavePort);
+            System.out.println("Slave is listening for tasks...");
+
+            // Accept a connection from the worker
+            Socket socket = serverSocket.accept();
+            BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+
+            // Read the path to CodeSlave.jar and the data
+            String codeSlavePath = in.readLine();
+            String matrixData = in.readLine();
+
+            System.out.println("Received task:");
+            System.out.println("CodeSlave Path: " + codeSlavePath);
+            System.out.println("Matrix Data: " + matrixData);
+
+            // Execute the CodeSlave.jar with the data
+            String configFilePath = "path_to_configFile";
+            String command = "java -jar " + codeSlavePath + " " + configFilePath + " " + matrixData;
+            Process process = Runtime.getRuntime().exec(command);
+            int exitCode = process.waitFor();
+
+            if (exitCode == 0) {
+                System.out.println("CodeSlave executed successfully.");
+
+                // Read the result from CodeSlave's output
+                BufferedReader resultReader = new BufferedReader(new InputStreamReader(process.getInputStream()));
+                StringBuilder result = new StringBuilder();
+                String line;
+                while ((line = resultReader.readLine()) != null) {
+                    result.append(line).append("\n");
+                }
+
+                // Send the result back to the worker
+                PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
+                out.println(result.toString());
+            } else {
+                System.out.println("Error in executing CodeSlave.");
+            }
+
+            // Close the socket
+            socket.close();
+            serverSocket.close();
+
+        } catch (IOException | InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+}

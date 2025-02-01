@@ -1,29 +1,27 @@
-all: compile_slaves run_slaves compile_server run_server compile_client run_client
+SHELL=cmd.exe
+.SHELLFLAGS=/c
 
-compile_slaves:
-	javac Slave.java
+all: compile run
 
-run_slaves:
-	java Slave 5048 
-	java Slave 5049 
-	java Slave 5105
-	java Slave 5205
+compile:
+	javac DivideMatrix.java DivideMatrixImpl.java Server.java Slave.java Client.java
 
-compile_server:
-	javac DivideMatrix.java
-	javac DivideMatrixImpl.java
-	javac Server.java
+run: run_server run_slaves run_client
 
 run_server:
-	java Server
+	start "Server" cmd /k "java Server"
 
-compile_client:
-	javac Client.java
+run_slaves:
+	start "Slave 5048" cmd /k "java Slave 5048"
+	start "Slave 5049" cmd /k "java Slave 5049"
+	start "Slave 5105" cmd /k "java Slave 5105"
+	start "Slave 5205" cmd /k "java Slave 5205"
 
 run_client:
-	java Client
+	timeout /t 5 > nul
+	start "Client" cmd /k "java Client"
 
 clean:
-	rm -f *.class
+	del /Q *.class
 
-.PHONY: all compile_slaves run_slaves compile_server run_server compile_client run_client clean
+.PHONY: all compile run run_server run_slaves run_client clean
